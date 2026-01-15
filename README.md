@@ -85,9 +85,11 @@ delivery_cadet/
 - Python **3.10 or above**
 - MySQL Server running locally
 - Git
-python environment
+- python environment
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
 ---
 
 ### 2️⃣ Clone Repository
