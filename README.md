@@ -240,14 +240,7 @@ To view traces:
 2. Select project: `delivery-cadet`
 3. Inspect LangGraph execution
 
----
 
-## 🚫 Security Notes
-
-- `.env` file is **not committed**
-- API keys should never be shared
-
----
 
 ## 🏁 Conclusion
 
