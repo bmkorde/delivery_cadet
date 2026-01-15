@@ -37,8 +37,8 @@ def clean_sql(sql: str) -> str:
     sql = sql.strip()
 
     
-    if sql.startswith("```"):
-        sql = sql.replace("```sql", "")
+    if sql.startswith(""):
+        sql = sql.replace("sql", "")
         sql = sql.replace("```", "")
 
     return sql.strip()
@@ -61,10 +61,11 @@ def run_sql(query: str):
             rows = [dict(zip(columns, r)) for r in result.fetchall()]
 
         # Mask any personal names
-        masked = [
-            {k: "***" if "name" in k.lower() else v for k, v in row.items()}
-            for row in rows
-        ]
+        PII_FIELDS = {"first_name", "last_name"}
+
+        masked = [ {k: "*" if k.lower() in PII_FIELDS else v for k, v in row.items()}
+                    for row in rows
+                 ]
 
         return {
             "success": True,

@@ -7,78 +7,115 @@ from agent.tools import get_schema, run_sql
 from agent.prompts import PROMPT
 
 
-# ---- Agent State ----
+# ------------------ Agent State ------------------
 class AgentState(MessagesState):
     question: str
     sql: str
-    result: any
+    result: list
 
-# ---- Initialize LLM ----
+
+# ------------------ LLM ------------------
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0
 )
 
-# ---- Node 1: Generate SQL ----
+
+# ------------------ SYSTEM PROMPT ------------------
+PROMPT = """
+You are a senior MySQL 8+ database expert.
+
+STRICT RULES:
+- Use ONLY MySQL 8+ syntax
+- NEVER use QUALIFY or FILTER
+- NEVER invent tables, columns, or aliases
+- Use ONLY columns that exist in the schema
+- Use MINIMUM joins
+- Prefer direct relationships
+- Revenue by country should use sales_franchises.country unless stated otherwise
+
+OUTPUT RULES:
+- Return ONLY raw SQL
+- No explanations
+- No markdown
+- No ```sql fences
+"""
+
+
+# ------------------ Node 1: Generate SQL ------------------
 def generate_sql(state: AgentState):
     schema = get_schema()
-    prompt = f"""
-You are a SQL expert.
 
-Database schema:
+    prompt = f"""
+{PROMPT}
+
+DATABASE SCHEMA:
 {schema}
 
-Convert the following question into SQL.
-Return ONLY the SQL query.
-
-Question:
+QUESTION:
 {state["question"]}
 """
+
+    print("\n===== PROMPT SENT TO LLM =====\n")
+    print(prompt)
+    print("\n=============================\n")
 
     sql = llm.invoke(prompt).content.strip()
 
     return {
         "sql": sql,
-        "messages": state["messages"] + [AIMessage(content=f"SQL Generated:\n{sql}")]
+        "messages": state["messages"] + [
+            AIMessage(content=f"Generated SQL:\n{sql}")
+        ]
     }
 
 
-# ---- Node 2: Execute SQL ----
-def execute_sql(state):
-    query = state["sql"]
-    raw = run_sql(query)
+# ------------------ Node 2: Execute SQL ------------------
+def execute_sql(state: AgentState):
+    sql = state["sql"]
+    raw = run_sql(sql)
 
-    # 🔴 HANDLE run_sql RETURN FORMAT
-    if isinstance(raw, dict):
-        if raw.get("success") is True:
-            rows = raw.get("data", [])
-        else:
-            rows = []
-            error = raw.get("error", "Unknown SQL error")
-            return {
-                "result": [],
-                "messages": state["messages"] + [
-                    AIMessage(content=f"SQL Error: {error}")
-                ]
-            }
-    else:
-        rows = raw if isinstance(raw, list) else []
+    # run_sql ALWAYS returns a dict
+    if not isinstance(raw, dict):
+        return {
+            "messages": state["messages"] + [
+                AIMessage(content="❌ Internal error: Invalid SQL execution response.")
+            ]
+        }
 
+    # SQL execution failed
+    if raw.get("success") is not True:
+        return {
+            "messages": state["messages"] + [
+                AIMessage(
+                    content=(
+                        "❌ SQL EXECUTION ERROR\n\n"
+                        f"Error:\n{raw.get('error')}\n\n"
+                        f"SQL:\n{raw.get('sql')}"
+                    )
+                )
+            ]
+        }
+
+    # SQL execution succeeded
     return {
-        "result": rows,
+        "result": raw.get("data", []),
         "messages": state["messages"]
     }
 
-# ---- Node 3: Format Result ----
 
+# ------------------ Node 3: Format Result ------------------
+def format_result(state: AgentState):
+    # If execute_sql already returned an error message, stop here
+    if "result" not in state:
+        return state
 
-def format_result(state):
-    rows = state.get("result", [])
+    rows = state["result"]
 
     if not rows:
-        answer = "No data found."
+        answer = "Query executed successfully but returned *0 rows*."
     else:
-        headers = rows[0].keys()
+        headers = list(rows[0].keys())
 
         table = "| " + " | ".join(headers) + " |\n"
         table += "| " + " | ".join(["---"] * len(headers)) + " |\n"
@@ -91,7 +128,9 @@ def format_result(state):
     return {
         "messages": state["messages"] + [AIMessage(content=answer)]
     }
-# ---- Build LangGraph ----
+
+
+# ------------------ Build LangGraph ------------------
 builder = StateGraph(AgentState)
 
 builder.add_node("generate_sql", generate_sql)
@@ -99,16 +138,14 @@ builder.add_node("execute_sql", execute_sql)
 builder.add_node("format_result", format_result)
 
 builder.set_entry_point("generate_sql")
-
 builder.add_edge("generate_sql", "execute_sql")
 builder.add_edge("execute_sql", "format_result")
-
 builder.set_finish_point("format_result")
 
 graph = builder.compile()
 
 
-# ---- Public function for UI ----
+# ------------------ Public API ------------------
 def ask_question(question: str) -> str:
     result = graph.invoke(
         {
