@@ -149,19 +149,19 @@ Restart terminal after setting variables.
 ### 6️⃣ Setup MySQL Database
 
 Login to MySQL:
+
+```bash
+mysql -u root -p
+```
+Enter password then
 ```sql
 CREATE DATABASE delivery_db;
 ```
-
-Update DB connection string in:
+then 
 ```
-db/loader.py
-db/test_connection.py
+EXIT
 ```
 
-```python
-mysql+mysqlconnector://username:password@localhost:3306/delivery_db
-```
 
 ---
 
