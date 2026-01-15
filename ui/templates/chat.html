@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery Cadet</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="dark-mode">
+
+<!-- SIDEBAR -->
+<div class="sidebar collapsed">
+    <div class="sidebar-content">
+        <button id="new-conversation-btn"
+                onclick="window.location.reload()">
+            New Chat
+        </button>
+    </div>
+</div>
+
+<!-- CHAT -->
+<div class="chat-container">
+    <div class="chat-content">
+
+        <!-- HEADER -->
+        <div class="chat-header">
+            <h1>🚚 Delivery Cadet</h1>
+        </div>
+
+        <!-- CHAT BOX -->
+        <div class="chat-box">
+            {% for msg in history %}
+                {% if msg.role == "user" %}
+                    <div class="message user">
+                        <div class="bubble">
+                            {{ msg.content }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="message agent">
+                        <div class="bubble">
+                            {{ msg.content | safe }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- INPUT -->
+        <form class="input-container" action="/ask" method="post">
+            <input type="text" name="question"
+                   placeholder="Ask a data question..."
+                   required>
+            <button type="submit">Send</button>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

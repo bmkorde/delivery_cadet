@@ -1,0 +1,40 @@
+# Core Python web framework
+fastapi
+uvicorn
+
+# LangChain & LangGraph
+langchain
+langgraph
+langchain-core
+langchain-community
+langchain-groq
+
+# LangSmith (Tracing & Visualization)
+langsmith
+
+# Environment variable management
+python-dotenv
+
+# HTTP requests
+requests
+
+# Data handling
+pandas
+numpy
+itsdangerous
+# Visualization libraries (as per assignment)
+matplotlib
+seaborn
+plotly
+altair
+
+# Optional: Database support (if used)
+sqlalchemy
+pymysql
+mysql-connector-python  
+
+# Optional: JSON & schema validation
+pydantic
+
+# Optional: Async utilities
+anyio
