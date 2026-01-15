@@ -22,6 +22,8 @@ requests
 pandas
 numpy
 itsdangerous
+markdown
+python-multipart
 # Visualization libraries (as per assignment)
 matplotlib
 seaborn
@@ -38,3 +40,4 @@ pydantic
 
 # Optional: Async utilities
 anyio
+
