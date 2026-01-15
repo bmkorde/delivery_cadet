@@ -85,13 +85,15 @@ delivery_cadet/
 - Python **3.10 or above**
 - MySQL Server running locally
 - Git
-
+python environment
+python3 -m venv .venv
+source .venv/bin/activate
 ---
 
 ### 2️⃣ Clone Repository
 
 ```bash
-git clone <your-github-repo-url>
+git clone https://github.com/bmkorde/delivery_cadet
 cd delivery_cadet
 ```
 
