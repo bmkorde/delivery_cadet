@@ -127,13 +127,13 @@ pip install -r requirments.txt
 
 ### 5️⃣ Set Environment Variables
 
-Create a `.env` file in project root:
+Temporary for current terminal session only
 
 ```
-GROQ_API_KEY=your_groq_api_key_here
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_API_KEY=your_langsmith_key
-LANGCHAIN_PROJECT=delivery-cadet
+export GROQ_API_KEY="your_groq_api_key_here"
+export LANGCHAIN_TRACING_V2=true
+export LANGCHAIN_API_KEY="your_langsmith_key"
+export LANGCHAIN_PROJECT="delivery-cadet"
 ```
 
 #### OR (Windows CMD)
