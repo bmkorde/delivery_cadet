@@ -180,11 +180,6 @@ Expected output:
 
 ### 8️⃣ Load CSV Files into MySQL
 
-Place CSV files inside:
-```
-data/
-```
-
 Run:
 ```bash
 python db/loader.py
