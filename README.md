@@ -85,11 +85,7 @@ delivery_cadet/
 - Python **3.10 or above**
 - MySQL Server running locally
 - Git
-- python environment
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+
 ---
 
 ### 2️⃣ Clone Repository
@@ -103,13 +99,20 @@ cd delivery_cadet
 
 ### 3️⃣ Create Virtual Environment
 
-#### Windows (PowerShell)
+#### for Windows (PowerShell)
 ```powershell
 python -m venv venv
 venv\Scripts\activate
 ```
-
 > If you face **permission denied**, run PowerShell as **Administrator**.
+
+#### for MAC (terminal)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+
 
 ---
 
