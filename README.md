@@ -152,7 +152,7 @@ CREATE DATABASE delivery_db;
 
 Update DB connection string in:
 ```
-db/load_data.py
+db/loader.py
 db/test_connection.py
 ```
 
@@ -184,7 +184,7 @@ data/
 
 Run:
 ```bash
-python db/load_data.py
+python db/loader.py
 ```
 
 Each CSV will be loaded as a table (table name = file name).
